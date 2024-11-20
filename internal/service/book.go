@@ -5,6 +5,8 @@ import (
 	v1 "novel-site-backend/api/v1"
 	"novel-site-backend/internal/model"
 	"novel-site-backend/internal/repository"
+
+	"go.uber.org/zap"
 )
 
 type BookService interface {
@@ -12,7 +14,7 @@ type BookService interface {
 	UpdateBook(ctx context.Context, id uint, req *v1.UpdateBookRequest) error
 	DeleteBook(ctx context.Context, id uint) error
 	GetBook(ctx context.Context, id uint) (*v1.GetBookResponse, error)
-	ListBooks(ctx context.Context, page, pageSize int) (*v1.ListBooksResponse, error)
+	ListBooks(ctx context.Context, req *v1.ListBooksRequest) (*v1.ListBooksResponse, error)
 }
 
 type bookService struct {
@@ -83,6 +85,13 @@ func (s *bookService) GetBook(ctx context.Context, id uint) (*v1.GetBookResponse
 		return nil, err
 	}
 
+	// 异步增加热度值
+	go func() {
+		if err := s.bookRepo.IncrementHotValue(context.Background(), id); err != nil {
+			s.logger.Error("increment hot value failed", zap.Error(err))
+		}
+	}()
+
 	return &v1.GetBookResponse{
 		Id:          book.Id,
 		FileName:    book.FileName,
@@ -99,11 +108,12 @@ func (s *bookService) GetBook(ctx context.Context, id uint) (*v1.GetBookResponse
 		Type:        book.Type,
 		Tag:         book.Tag,
 		CreatedAt:   book.CreatedAt,
+		HotValue:    book.HotValue,
 	}, nil
 }
 
-func (s *bookService) ListBooks(ctx context.Context, page, pageSize int) (*v1.ListBooksResponse, error) {
-	books, total, err := s.bookRepo.List(ctx, page, pageSize)
+func (s *bookService) ListBooks(ctx context.Context, req *v1.ListBooksRequest) (*v1.ListBooksResponse, error) {
+	books, total, err := s.bookRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}

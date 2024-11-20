@@ -128,16 +128,27 @@ func (h *BookHandler) GetBook(ctx *gin.Context) {
 // @Tags 书籍模块
 // @Accept json
 // @Produce json
-// @Param page query int false "页码"
-// @Param page_size query int false "每页数量"
+// @Param request body v1.ListBooksRequest true "查询参数"
 // @Success 200 {object} v1.ListBooksResponse
-// @Router /books [get]
+// @Router /books/list [post]
 func (h *BookHandler) ListBooks(ctx *gin.Context) {
-	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "10"))
+	req := new(v1.ListBooksRequest)
+	if err := ctx.ShouldBindJSON(req); err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+		return
+	}
 
-	books, err := h.bookService.ListBooks(ctx, page, pageSize)
+	// 设置默认值
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 10
+	}
+
+	books, err := h.bookService.ListBooks(ctx, req)
 	if err != nil {
+		h.logger.WithContext(ctx).Error("bookService.ListBooks error", zap.Error(err))
 		v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
 		return
 	}

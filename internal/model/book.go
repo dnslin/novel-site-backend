@@ -24,6 +24,7 @@ type Book struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	HotValue    int64          `gorm:"column:hot_value;default:0"`
 }
 
 type RatingType struct {

@@ -14,8 +14,9 @@ type BookRepository interface {
 	Update(ctx context.Context, book *model.Book) error
 	Delete(ctx context.Context, id uint) error
 	GetByID(ctx context.Context, id uint) (*model.Book, error)
-	List(ctx context.Context, page, pageSize int) ([]*model.Book, int64, error)
+	List(ctx context.Context, req *v1.ListBooksRequest) ([]*model.Book, int64, error)
 	GetByMD5(ctx context.Context, md5 string) (*model.Book, error)
+	IncrementHotValue(ctx context.Context, id uint) error
 }
 
 type bookRepository struct {
@@ -51,16 +52,37 @@ func (r *bookRepository) GetByID(ctx context.Context, id uint) (*model.Book, err
 	return &book, nil
 }
 
-func (r *bookRepository) List(ctx context.Context, page, pageSize int) ([]*model.Book, int64, error) {
+func (r *bookRepository) List(ctx context.Context, req *v1.ListBooksRequest) ([]*model.Book, int64, error) {
 	var books []*model.Book
 	var total int64
 
 	db := r.DB(ctx)
-	if err := db.Model(&model.Book{}).Count(&total).Error; err != nil {
+
+	// 构建查询条件
+	query := db.Model(&model.Book{})
+
+	// 添加模糊查询条件
+	if req.Title != "" {
+		query = query.Where("title LIKE ?", "%"+req.Title+"%")
+	}
+	if req.Author != "" {
+		query = query.Where("author LIKE ?", "%"+req.Author+"%")
+	}
+	if req.Tag != "" {
+		query = query.Where("tag LIKE ?", "%"+req.Tag+"%")
+	}
+
+	// 获取总数
+	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := db.Offset((page - 1) * pageSize).Limit(pageSize).Find(&books).Error; err != nil {
+	// 分页查询，按热度值降序排序
+	offset := (req.Page - 1) * req.PageSize
+	if err := query.Order("hot_value DESC").
+		Offset(offset).
+		Limit(req.PageSize).
+		Find(&books).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -76,4 +98,12 @@ func (r *bookRepository) GetByMD5(ctx context.Context, md5 string) (*model.Book,
 		return nil, err
 	}
 	return &book, nil
+}
+
+func (r *bookRepository) IncrementHotValue(ctx context.Context, id uint) error {
+	// 使用 SQL 的 UPDATE 语句直接增加热度值
+	return r.DB(ctx).Model(&model.Book{}).
+		Where("id = ?", id).
+		UpdateColumn("hot_value", gorm.Expr("hot_value + ?", 1)).
+		Error
 }
