@@ -33,7 +33,16 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
 	userHandler := handler.NewUserHandler(handlerHandler, userService)
-	httpServer := server.NewHTTPServer(logger, viperViper, jwtJWT, userHandler)
+	bookRepository := repository.NewBookRepository(repositoryRepository)
+	bookService := service.NewBookService(serviceService, bookRepository)
+	bookHandler := handler.NewBookHandler(handlerHandler, bookService)
+	bookRatingRepository := repository.NewBookRatingRepository(repositoryRepository)
+	bookRatingService := service.NewBookRatingService(serviceService, bookRatingRepository)
+	bookRatingHandler := handler.NewBookRatingHandler(handlerHandler, bookRatingService)
+	ratingTypeRepository := repository.NewRatingTypeRepository(repositoryRepository)
+	ratingTypeService := service.NewRatingTypeService(serviceService, ratingTypeRepository)
+	ratingTypeHandler := handler.NewRatingTypeHandler(handlerHandler, ratingTypeService)
+	httpServer := server.NewHTTPServer(logger, viperViper, jwtJWT, userHandler, bookHandler, bookRatingHandler, ratingTypeHandler)
 	job := server.NewJob(logger)
 	appApp := newApp(httpServer, job)
 	return appApp, func() {
@@ -56,5 +65,5 @@ func newApp(
 	job *server.Job,
 
 ) *app.App {
-	return app.NewApp(app.WithServer(httpServer, job), app.WithName("demo-server"))
+	return app.NewApp(app.WithServer(httpServer, job), app.WithName("novel-site-backend"))
 }

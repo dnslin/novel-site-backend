@@ -58,7 +58,7 @@ func newApp(
 ) *app.App {
 	return app.NewApp(
 		app.WithServer(httpServer, job),
-		app.WithName("demo-server"),
+		app.WithName("novel-site-backend"),
 	)
 }
 
