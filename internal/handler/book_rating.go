@@ -6,6 +6,8 @@ import (
 	"novel-site-backend/internal/service"
 	"strconv"
 
+	"novel-site-backend/internal/middleware"
+
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -36,6 +38,9 @@ func (h *BookRatingHandler) CreateBookRating(ctx *gin.Context) {
 		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
 		return
 	}
+
+	// 从中间件获取IP
+	req.IP = middleware.GetClientIP(ctx)
 
 	if err := h.bookRatingService.CreateBookRating(ctx, req); err != nil {
 		h.logger.WithContext(ctx).Error("bookRatingService.CreateBookRating error", zap.Error(err))

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
 	apiV1 "novel-site-backend/api/v1"
 	"novel-site-backend/docs"
 	"novel-site-backend/internal/handler"
@@ -9,6 +8,8 @@ import (
 	"novel-site-backend/pkg/jwt"
 	"novel-site-backend/pkg/log"
 	"novel-site-backend/pkg/server/http"
+
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -41,6 +42,7 @@ func NewHTTPServer(
 		middleware.CORSMiddleware(),
 		middleware.ResponseLogMiddleware(logger),
 		middleware.RequestLogMiddleware(logger),
+		middleware.ClientIPMiddleware(logger),
 		//middleware.SignMiddleware(log),
 	)
 	s.GET("/", func(ctx *gin.Context) {
