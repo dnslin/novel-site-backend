@@ -20,6 +20,9 @@ func NewHTTPServer(
 	conf *viper.Viper,
 	jwt *jwt.JWT,
 	userHandler *handler.UserHandler,
+	bookHandler *handler.BookHandler,
+	bookRatingHandler *handler.BookRatingHandler,
+	ratingTypeHandler *handler.RatingTypeHandler,
 ) *http.Server {
 	gin.SetMode(gin.DebugMode)
 	s := http.NewServer(
@@ -48,7 +51,7 @@ func NewHTTPServer(
 	s.GET("/", func(ctx *gin.Context) {
 		logger.WithContext(ctx).Info("hello")
 		apiV1.HandleSuccess(ctx, map[string]interface{}{
-			":)": "Thank you for using nunu!",
+			":)": "Thank you for using novel-site-backend!",
 		})
 	})
 
@@ -57,20 +60,34 @@ func NewHTTPServer(
 		// No route group has permission
 		noAuthRouter := v1.Group("/")
 		{
-			noAuthRouter.POST("/register", userHandler.Register)
-			noAuthRouter.POST("/login", userHandler.Login)
-		}
-		// Non-strict permission routing group
-		noStrictAuthRouter := v1.Group("/").Use(middleware.NoStrictAuth(jwt, logger))
-		{
-			noStrictAuthRouter.GET("/user", userHandler.GetProfile)
-		}
+			// noAuthRouter.POST("/register", userHandler.Register)
+			// noAuthRouter.POST("/login", userHandler.Login)
+			// noAuthRouter.POST("/books", bookHandler.CreateBook)
+			// noAuthRouter.PUT("/books/:id", bookHandler.UpdateBook)
+			// noAuthRouter.DELETE("/books/:id", bookHandler.DeleteBook)
+			noAuthRouter.GET("/books/:id", bookHandler.GetBook)
+			noAuthRouter.GET("/books", bookHandler.ListBooks)
 
-		// Strict permission routing group
-		strictAuthRouter := v1.Group("/").Use(middleware.StrictAuth(jwt, logger))
-		{
-			strictAuthRouter.PUT("/user", userHandler.UpdateProfile)
+			// 评分类型相关接口
+			noAuthRouter.GET("/rating-types", ratingTypeHandler.ListRatingTypes)
+
+			// 书籍评分相关接口
+			noAuthRouter.POST("/book-ratings", bookRatingHandler.CreateBookRating)
+			// noAuthRouter.PUT("/book-ratings/:id", bookRatingHandler.UpdateBookRating)
+			noAuthRouter.GET("/book-ratings/:id", bookRatingHandler.GetBookRating)
+			// noAuthRouter.GET("/books/:book_id/ratings", bookRatingHandler.ListBookRatings)
 		}
+		// // Non-strict permission routing group
+		// noStrictAuthRouter := v1.Group("/").Use(middleware.NoStrictAuth(jwt, logger))
+		// {
+		// 	noStrictAuthRouter.GET("/user", userHandler.GetProfile)
+		// }
+
+		// // Strict permission routing group
+		// strictAuthRouter := v1.Group("/").Use(middleware.StrictAuth(jwt, logger))
+		// {
+		// 	strictAuthRouter.PUT("/user", userHandler.UpdateProfile)
+		// }
 	}
 
 	return s
