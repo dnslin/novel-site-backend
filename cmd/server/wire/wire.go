@@ -13,6 +13,7 @@ import (
 	"novel-site-backend/pkg/log"
 	"novel-site-backend/pkg/server/http"
 	"novel-site-backend/pkg/sid"
+
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 )
@@ -23,16 +24,25 @@ var repositorySet = wire.NewSet(
 	repository.NewRepository,
 	repository.NewTransaction,
 	repository.NewUserRepository,
+	repository.NewRatingTypeRepository,
+	repository.NewBookRatingRepository,
+	repository.NewBookRepository,
 )
 
 var serviceSet = wire.NewSet(
 	service.NewService,
 	service.NewUserService,
+	service.NewRatingTypeService,
+	service.NewBookRatingService,
+	service.NewBookService,
 )
 
 var handlerSet = wire.NewSet(
 	handler.NewHandler,
 	handler.NewUserHandler,
+	handler.NewRatingTypeHandler,
+	handler.NewBookRatingHandler,
+	handler.NewBookHandler,
 )
 
 var serverSet = wire.NewSet(

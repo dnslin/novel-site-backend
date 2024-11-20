@@ -7,6 +7,8 @@
 package wire
 
 import (
+	"github.com/google/wire"
+	"github.com/spf13/viper"
 	"novel-site-backend/internal/handler"
 	"novel-site-backend/internal/repository"
 	"novel-site-backend/internal/server"
@@ -16,8 +18,6 @@ import (
 	"novel-site-backend/pkg/log"
 	"novel-site-backend/pkg/server/http"
 	"novel-site-backend/pkg/sid"
-	"github.com/google/wire"
-	"github.com/spf13/viper"
 )
 
 // Injectors from wire.go:
@@ -42,11 +42,11 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 
 // wire.go:
 
-var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository)
+var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository, repository.NewRatingTypeRepository, repository.NewBookRatingRepository, repository.NewBookRepository)
 
-var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
+var serviceSet = wire.NewSet(service.NewService, service.NewUserService, service.NewRatingTypeService, service.NewBookRatingService, service.NewBookService)
 
-var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler)
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler, handler.NewRatingTypeHandler, handler.NewBookRatingHandler, handler.NewBookHandler)
 
 var serverSet = wire.NewSet(server.NewHTTPServer, server.NewJob)
 
