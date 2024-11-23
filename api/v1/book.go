@@ -55,6 +55,7 @@ type GetBookResponse struct {
 	Tag         string    `json:"tag"`           // 标签
 	HotValue    int64     `json:"hot_value"`     // 热度值
 	CreatedAt   time.Time `json:"created_at"`    // 创建时间
+	Downloads   int64     `json:"downloads"`     // 下载量
 }
 
 // BookItem 图书列表项
