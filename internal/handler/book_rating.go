@@ -105,27 +105,27 @@ func (h *BookRatingHandler) DeleteBookRating(ctx *gin.Context) {
 }
 
 // GetBookRating godoc
-// @Summary 获取书籍评分详情
+// @Summary 获取书籍评分统计
 // @Tags 书籍评分模块
 // @Accept json
 // @Produce json
-// @Param id path int true "评分ID"
-// @Success 200 {object} v1.BookRatingResponse
-// @Router /book-ratings/{id} [get]
+// @Param book_id path int true "书籍ID"
+// @Success 200 {object} v1.GetBookRatingResponse
+// @Router /books/{book_id}/rating-stats [get]
 func (h *BookRatingHandler) GetBookRating(ctx *gin.Context) {
-	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	bookId, err := strconv.ParseUint(ctx.Param("book_id"), 10, 32)
 	if err != nil {
 		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
 		return
 	}
 
-	rating, err := h.bookRatingService.GetBookRating(ctx, uint(id))
+	stats, err := h.bookRatingService.GetBookRating(ctx, uint(bookId))
 	if err != nil {
 		v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
 		return
 	}
 
-	v1.HandleSuccess(ctx, rating)
+	v1.HandleSuccess(ctx, stats)
 }
 
 // ListBookRatings godoc

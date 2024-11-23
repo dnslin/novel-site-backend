@@ -47,6 +47,10 @@ type BookRating struct {
 	UpdatedAt    time.Time
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }
+type RatingTypeCount struct {
+	RatingTypeID uint  `json:"rating_type_id"`
+	Count        int64 `json:"count"`
+}
 
 func (b *Book) TableName() string {
 	return "books"

@@ -71,7 +71,7 @@ func NewHTTPServer(
 			// 书籍评分相关接口
 			noAuthRouter.POST("/book-ratings", bookRatingHandler.CreateBookRating)
 			// noAuthRouter.PUT("/book-ratings/:id", bookRatingHandler.UpdateBookRating)
-			noAuthRouter.GET("/book-ratings/:id", bookRatingHandler.GetBookRating)
+			noAuthRouter.GET("/book-ratings/:book_id/rating-stats", bookRatingHandler.GetBookRating)
 			// noAuthRouter.GET("/books/:book_id/ratings", bookRatingHandler.ListBookRatings)
 		}
 		// // Non-strict permission routing group

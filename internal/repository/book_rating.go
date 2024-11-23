@@ -11,6 +11,7 @@ type BookRatingRepository interface {
 	Delete(ctx context.Context, id uint) error
 	GetByID(ctx context.Context, id uint) (*model.BookRating, error)
 	ListByBookID(ctx context.Context, bookId uint, page, pageSize int) ([]*model.BookRating, int64, error)
+	GetRatingStats(ctx context.Context, bookId uint) ([]*model.RatingTypeCount, int64, error)
 }
 
 type bookRatingRepository struct {
@@ -67,4 +68,25 @@ func (r *bookRatingRepository) ListByBookID(ctx context.Context, bookId uint, pa
 	}
 
 	return ratings, total, nil
+}
+
+func (r *bookRatingRepository) GetRatingStats(ctx context.Context, bookId uint) ([]*model.RatingTypeCount, int64, error) {
+	var stats []*model.RatingTypeCount
+	var total int64
+
+	if err := r.DB(ctx).Model(&model.BookRating{}).
+		Where("book_id = ?", bookId).
+		Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := r.DB(ctx).Model(&model.BookRating{}).
+		Select("rating_type_id, count(*) as count").
+		Where("book_id = ?", bookId).
+		Group("rating_type_id").
+		Scan(&stats).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return stats, total, nil
 }
