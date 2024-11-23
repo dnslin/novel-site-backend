@@ -17,6 +17,7 @@ type BookRepository interface {
 	List(ctx context.Context, req *v1.ListBooksRequest) ([]*model.Book, int64, error)
 	GetByMD5(ctx context.Context, md5 string) (*model.Book, error)
 	IncrementHotValue(ctx context.Context, id uint) error
+	GetAllSorts(ctx context.Context) ([]string, error)
 }
 
 type bookRepository struct {
@@ -106,4 +107,14 @@ func (r *bookRepository) IncrementHotValue(ctx context.Context, id uint) error {
 		Where("id = ?", id).
 		UpdateColumn("hot_value", gorm.Expr("hot_value + ?", 1)).
 		Error
+}
+
+func (r *bookRepository) GetAllSorts(ctx context.Context) ([]string, error) {
+	var sorts []string
+	err := r.DB(ctx).Model(&model.Book{}).
+		Distinct().
+		Where("sort != ''"). // 排除空的分类
+		Pluck("sort", &sorts).
+		Error
+	return sorts, err
 }

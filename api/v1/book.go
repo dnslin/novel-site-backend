@@ -83,3 +83,8 @@ type ListBooksResponse struct {
 	Total int64       `json:"total"`
 	Items []*BookItem `json:"items"`
 }
+
+// GetAllSortsResponse 获取所有分类的响应
+type GetAllSortsResponse struct {
+	Sorts []string `json:"sorts"`
+}

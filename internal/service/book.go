@@ -15,6 +15,7 @@ type BookService interface {
 	DeleteBook(ctx context.Context, id uint) error
 	GetBook(ctx context.Context, id uint) (*v1.GetBookResponse, error)
 	ListBooks(ctx context.Context, req *v1.ListBooksRequest) (*v1.ListBooksResponse, error)
+	GetAllSorts(ctx context.Context) ([]string, error)
 }
 
 type bookService struct {
@@ -137,4 +138,8 @@ func (s *bookService) ListBooks(ctx context.Context, req *v1.ListBooksRequest) (
 		Total: total,
 		Items: items,
 	}, nil
+}
+
+func (s *bookService) GetAllSorts(ctx context.Context) ([]string, error) {
+	return s.bookRepo.GetAllSorts(ctx)
 }

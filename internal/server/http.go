@@ -73,6 +73,7 @@ func NewHTTPServer(
 			// noAuthRouter.PUT("/book-ratings/:id", bookRatingHandler.UpdateBookRating)
 			noAuthRouter.GET("/book-ratings/:book_id/rating-stats", bookRatingHandler.GetBookRating)
 			// noAuthRouter.GET("/books/:book_id/ratings", bookRatingHandler.ListBookRatings)
+			noAuthRouter.GET("/books/sorts", bookHandler.GetAllSorts)
 		}
 		// // Non-strict permission routing group
 		// noStrictAuthRouter := v1.Group("/").Use(middleware.NoStrictAuth(jwt, logger))

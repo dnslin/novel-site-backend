@@ -155,3 +155,23 @@ func (h *BookHandler) ListBooks(ctx *gin.Context) {
 
 	v1.HandleSuccess(ctx, books)
 }
+
+// GetAllSorts godoc
+// @Summary 获取所有书籍分类
+// @Tags 书籍模块
+// @Accept json
+// @Produce json
+// @Success 200 {object} v1.GetAllSortsResponse
+// @Router /books/sorts [get]
+func (h *BookHandler) GetAllSorts(ctx *gin.Context) {
+	sorts, err := h.bookService.GetAllSorts(ctx)
+	if err != nil {
+		h.logger.WithContext(ctx).Error("bookService.GetAllSorts error", zap.Error(err))
+		v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	v1.HandleSuccess(ctx, &v1.GetAllSortsResponse{
+		Sorts: sorts,
+	})
+}
