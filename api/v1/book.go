@@ -89,3 +89,21 @@ type ListBooksResponse struct {
 type GetAllSortsResponse struct {
 	Sorts []string `json:"sorts"`
 }
+
+// QuickSearchRequest 快速搜索请求
+type QuickSearchRequest struct {
+	Keyword string `json:"keyword" binding:"required"` // 搜索关键字(可匹配书名、作者、标签)
+}
+
+// QuickSearchItem 快速搜索结果项
+type QuickSearchItem struct {
+	Id     uint   `json:"id"`     // 图书ID
+	Title  string `json:"title"`  // 书名
+	Author string `json:"author"` // 作者
+	Cover  string `json:"cover"`  // 封面图片URL
+}
+
+// QuickSearchResponse 快速搜索响应
+type QuickSearchResponse struct {
+	Items []*QuickSearchItem `json:"items"` // 搜索结果列表
+}

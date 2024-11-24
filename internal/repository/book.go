@@ -18,6 +18,7 @@ type BookRepository interface {
 	GetByMD5(ctx context.Context, md5 string) (*model.Book, error)
 	IncrementHotValue(ctx context.Context, id uint) error
 	GetAllSorts(ctx context.Context) ([]string, error)
+	QuickSearch(ctx context.Context, keyword string, limit int) ([]*model.Book, error)
 }
 
 type bookRepository struct {
@@ -117,4 +118,19 @@ func (r *bookRepository) GetAllSorts(ctx context.Context) ([]string, error) {
 		Pluck("sort", &sorts).
 		Error
 	return sorts, err
+}
+
+func (r *bookRepository) QuickSearch(ctx context.Context, keyword string, limit int) ([]*model.Book, error) {
+	var books []*model.Book
+
+	err := r.DB(ctx).Model(&model.Book{}).
+		Where("title LIKE ? OR author LIKE ? OR tag LIKE ?",
+						"%"+keyword+"%",
+						"%"+keyword+"%",
+						"%"+keyword+"%").
+		Order("hot_value DESC"). // 按热度排序
+		Limit(limit).            // 限制返回数量
+		Find(&books).Error
+
+	return books, err
 }

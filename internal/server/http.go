@@ -64,6 +64,7 @@ func NewHTTPServer(
 			// noAuthRouter.DELETE("/books/:id", bookHandler.DeleteBook)
 			noAuthRouter.GET("/books/:id", bookHandler.GetBook)
 			noAuthRouter.POST("/books/list", bookHandler.ListBooks)
+			noAuthRouter.POST("/books/search", bookHandler.QuickSearch)
 
 			// 评分类型相关接口
 			noAuthRouter.GET("/rating-types", ratingTypeHandler.ListRatingTypes)

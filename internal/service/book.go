@@ -16,6 +16,7 @@ type BookService interface {
 	GetBook(ctx context.Context, id uint) (*v1.GetBookResponse, error)
 	ListBooks(ctx context.Context, req *v1.ListBooksRequest) (*v1.ListBooksResponse, error)
 	GetAllSorts(ctx context.Context) ([]string, error)
+	QuickSearch(ctx context.Context, keyword string) (*v1.QuickSearchResponse, error)
 }
 
 type bookService struct {
@@ -142,4 +143,25 @@ func (s *bookService) ListBooks(ctx context.Context, req *v1.ListBooksRequest) (
 
 func (s *bookService) GetAllSorts(ctx context.Context) ([]string, error) {
 	return s.bookRepo.GetAllSorts(ctx)
+}
+
+func (s *bookService) QuickSearch(ctx context.Context, keyword string) (*v1.QuickSearchResponse, error) {
+	books, err := s.bookRepo.QuickSearch(ctx, keyword, 8)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []*v1.QuickSearchItem
+	for _, book := range books {
+		items = append(items, &v1.QuickSearchItem{
+			Id:     book.Id,
+			Title:  book.Title,
+			Author: book.Author,
+			Cover:  book.Cover,
+		})
+	}
+
+	return &v1.QuickSearchResponse{
+		Items: items,
+	}, nil
 }

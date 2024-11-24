@@ -175,3 +175,28 @@ func (h *BookHandler) GetAllSorts(ctx *gin.Context) {
 		Sorts: sorts,
 	})
 }
+
+// QuickSearch godoc
+// @Summary 快速搜索书籍
+// @Tags 书籍模块
+// @Accept json
+// @Produce json
+// @Param request body v1.QuickSearchRequest true "搜索参数"
+// @Success 200 {object} v1.QuickSearchResponse
+// @Router /books/search [post]
+func (h *BookHandler) QuickSearch(ctx *gin.Context) {
+	req := new(v1.QuickSearchRequest)
+	if err := ctx.ShouldBindJSON(req); err != nil {
+		v1.HandleError(ctx, http.StatusBadRequest, v1.ErrBadRequest, nil)
+		return
+	}
+
+	result, err := h.bookService.QuickSearch(ctx, req.Keyword)
+	if err != nil {
+		h.logger.WithContext(ctx).Error("bookService.QuickSearch error", zap.Error(err))
+		v1.HandleError(ctx, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	v1.HandleSuccess(ctx, result)
+}
