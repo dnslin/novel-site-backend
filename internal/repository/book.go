@@ -73,6 +73,16 @@ func (r *bookRepository) List(ctx context.Context, req *v1.ListBooksRequest) ([]
 	if req.Tag != "" {
 		query = query.Where("tag LIKE ?", "%"+req.Tag+"%")
 	}
+	if req.Sort != "" {
+		query = query.Where("sort LIKE ?", "%"+req.Sort+"%")
+	}
+	// 这里的 type是用来做排序 的 如果 type=lastest 则按创建时间降序排序
+	if req.Type == "latest" {
+		query = query.Order("created_at DESC")
+	}
+	if req.Type == "hotest" {
+		query = query.Order("hot_value DESC")
+	}
 
 	// 获取总数
 	if err := query.Count(&total).Error; err != nil {

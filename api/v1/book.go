@@ -76,6 +76,8 @@ type ListBooksRequest struct {
 	Title    string `json:"title,omitempty"`  // 书名，可选，支持模糊查询
 	Author   string `json:"author,omitempty"` // 作者，可选，支持模糊查询
 	Tag      string `json:"tag,omitempty"`    // 标签，可选，支持模糊查询
+	Sort     string `json:"sort,omitempty"`   // 分类，可选，支持模糊查询
+	Type     string `json:"type,omitempty"`   // 类型，可选，支持模糊查询
 	Page     int    `json:"page"`             // 页码
 	PageSize int    `json:"page_size"`        // 每页数量
 }
