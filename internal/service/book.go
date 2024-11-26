@@ -151,7 +151,7 @@ func (s *bookService) QuickSearch(ctx context.Context, keyword string) (*v1.Quic
 		return nil, err
 	}
 
-	var items []*v1.QuickSearchItem
+	items := make([]*v1.QuickSearchItem, 0)
 	for _, book := range books {
 		items = append(items, &v1.QuickSearchItem{
 			Id:     book.Id,
