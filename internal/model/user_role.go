@@ -1,11 +1,11 @@
 package model
 
-import "gorm.io/gorm"
-
 type UserRole struct {
-	gorm.Model
+	Id     uint `gorm:"primarykey"`
+	UserId uint `gorm:"not null;index" json:"user_id"` // 用户ID
+	RoleId uint `gorm:"not null;index" json:"role_id"` // 角色ID
 }
 
-func (m *UserRole) TableName() string {
-    return "user_role"
+func (ur *UserRole) TableName() string {
+	return "user_roles"
 }

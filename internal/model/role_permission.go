@@ -1,11 +1,11 @@
 package model
 
-import "gorm.io/gorm"
-
 type RolePermission struct {
-	gorm.Model
+	Id           uint `gorm:"primarykey"`
+	RoleId       uint `gorm:"not null;index" json:"role_id"`       // 角色ID
+	PermissionId uint `gorm:"not null;index" json:"permission_id"` // 权限ID
 }
 
-func (m *RolePermission) TableName() string {
-    return "role_permission"
+func (rp *RolePermission) TableName() string {
+	return "role_permissions"
 }
