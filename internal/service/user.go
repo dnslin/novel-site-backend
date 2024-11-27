@@ -5,8 +5,9 @@ import (
 	v1 "novel-site-backend/api/v1"
 	"novel-site-backend/internal/model"
 	"novel-site-backend/internal/repository"
-	"golang.org/x/crypto/bcrypt"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService interface {
@@ -77,7 +78,7 @@ func (s *userService) Login(ctx context.Context, req *v1.LoginRequest) (string, 
 	if err != nil {
 		return "", err
 	}
-	token, err := s.jwt.GenToken(user.UserId, time.Now().Add(time.Hour*24*90))
+	token, err := s.jwt.GenToken(user.UserId, time.Now().Add(time.Hour*24*1))
 	if err != nil {
 		return "", err
 	}
